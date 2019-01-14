@@ -3,6 +3,7 @@ Neuron neuron;
 void setup() {
   size(2000, 1000, P2D);
   
+  // sample inputs
   float[][] inputs = new float [][] {
     {0, 0, 0},
     {0, 0, 1},
@@ -14,6 +15,7 @@ void setup() {
     {1, 1, 1}
   };
   
+  // sample outputs
   float[][] outputs = new float [][] {
     {0},
     {0},
@@ -25,7 +27,14 @@ void setup() {
     {1}
   };
   
-  neuron = new Neuron(3, 1);
+  
+  // set number of intputs
+  int numInputs = 3;
+  
+  // set number of outputs
+  int numOutputs = 1;
+  
+  neuron = new Neuron(numInputs, numOutputs);
   neuron.train(inputs, outputs, 1000);
   
 }
@@ -34,7 +43,8 @@ void setup() {
 void draw() {
   translate(width / 2, height / 2);
   background(0); 
-  stroke(255);
+  textSize(64);
+  fill(255, 255, 255);
   
   float[][] inputs1 = new float [][] {
     {1, 0, 0}
@@ -48,14 +58,9 @@ void draw() {
     {0, 0, 1}
   };
   
-  textSize(64);
-  fill(255, 255, 255);
-  text(neuron.mat[0][0], 0, -400);
-  text(neuron.mat[1][0], 0, -300);
-  text(neuron.mat[2][0], 0, -200);
-  text(neuron.think(inputs1)[0][0], 0, 200);
-  text(neuron.think(inputs2)[0][0], 0, 300);
-  text(neuron.think(inputs3)[0][0], 0, 400);
+  text(neuron.think(inputs1)[0][0], 0, -400);
+  text(neuron.think(inputs2)[0][0], 0, -300);
+  text(neuron.think(inputs3)[0][0], 0, -200);
 }
 
 class Neuron {
@@ -112,12 +117,12 @@ class Neuron {
     return output;
   }
   
-  float[][] addition(float[][] matrix1, float matrix2){
+  float[][] addition(float[][] matrix1, float[][] matrix2){
     float[][] output = new float[matrix1.length][]; //<>//
       for (int i = 0; i < output.length; i++){
         output[i] = new float[matrix1[0].length];
         for (int n = 0; n < matrix1[0].length; n++){
-          output[i][n] = matrix1[i][n] + matrix2;
+          output[i][n] = matrix1[i][n] + matrix2[i][n];
         }
       }
     return output;
@@ -170,7 +175,7 @@ class Neuron {
     for (int i = 0; i < iterations; i++){
       float[][] outputs = think(inputs);
       float[][] error = subtract(desiredOutputs, outputs);
-      float adjustment = dot(flip(desiredOutputs), multiply(error, sigmoidDerivativeMatrix(outputs)))[0][0];
+      float[][] adjustment = dot(flip(inputs), multiply(error, sigmoidDerivativeMatrix(outputs)));
       mat = addition(mat, adjustment); //<>//
     }
   }
